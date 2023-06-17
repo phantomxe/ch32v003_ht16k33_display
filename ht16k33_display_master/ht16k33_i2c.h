@@ -100,15 +100,10 @@ char *errstr[] =
 	"transmit complete",
 };
 
-/*
- * error handler
- */
 uint8_t i2c_error(uint8_t err)
 {
-	// report error
 	printf("i2c_error - timeout waiting for %s\n\r", errstr[err]);
 	
-	// reset & initialize I2C
 	i2c_init();
 
 	return 1;
@@ -116,7 +111,6 @@ uint8_t i2c_error(uint8_t err)
 
 uint8_t i2c_chk_evt(uint32_t event_mask)
 {
-	/* read order matters here! STAR1 before STAR2!! */
 	uint32_t status = I2C1->STAR1 | (I2C1->STAR2<<16);
 	return (status & event_mask) == event_mask;
 }
@@ -238,11 +232,6 @@ char *dtostrf (float val, signed char width, unsigned char prec, char *sout) {
 
 void ht16k33_print_float(char usd[]) {  
     char string_usd[10], string_usd_decimal[10]; 
- 
-	//char buf[33];
-	//char *string_usd = dtostrf(usd, 6, 4, buf);
- 
-	//printf("Deneme: %s Data len: %d\r\n", usd, strlen(usd));
 
 	uint8_t max_i = 0, len = strlen(usd);
 	char c = usd[0];
@@ -253,9 +242,6 @@ void ht16k33_print_float(char usd[]) {
 
 	mini_snprintf(string_usd, max_i+1, "%s", usd); 
 	mini_snprintf(string_usd_decimal, len-max_i, "%s", (usd + max_i+ 1)); 
-
-	//printf("string_usd: %s \r\n", string_usd);
-	//printf("string_usd_decimal: %s \r\n", string_usd_decimal);
 
 	max_i = 0;
 	for(uint8_t i = 0; i < strlen(string_usd); i++) {
@@ -271,35 +257,12 @@ void ht16k33_print_float(char usd[]) {
 		max_i++;
 		ht16k33_write_digit_num(i+strlen(string_usd), (uint8_t)(string_usd_decimal[i] - '0'), 0); 
 	}
-
 	
 	for(uint8_t i = max_i; i < 6; i++) {
         displaybuffer[i] = 0;
     }
 
-
  	ht16k33_write_display();
-
-
-    /* 
-    for(int i = 0; i < 4; i++) {
-        if(i == 0) {
-        matrix.writeDigitNum(5-i, String(string_usd[len-i-1]).toInt(), waiting_float_dot);
-        waiting_float_dot != waiting_float_dot;
-        } else {
-        matrix.writeDigitNum(5-i, String(string_usd[len-i-1]).toInt(), false);
-        }
-    }
-
-    int decimal_usd = floor(usd);
-    if(decimal_usd > 9){
-        matrix.writeDigitNum(1, int(decimal_usd % 10), true);
-        matrix.writeDigitNum(0, int(decimal_usd / 10), false);
-    } else{
-        matrix.writeDigitNum(1, int(decimal_usd), true);
-    }
-    
-    matrix.writeDisplay(); */
 }  
 
 #endif
